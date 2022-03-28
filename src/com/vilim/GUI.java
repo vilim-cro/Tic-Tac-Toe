@@ -14,9 +14,12 @@ public class GUI extends JFrame {
     private JMenu menu;
     private JMenuItem quit;
     private JMenuItem newGame;
+    private AI ai;
+    private String aiSign = "X";
 
-    public GUI() {
+    public GUI(AI ai) {
         super();
+        this.ai = ai;
         pane = getContentPane();
         pane.setLayout(new GridLayout(3,3));
         setTitle("Tic-Tac-Toe");
@@ -31,6 +34,10 @@ public class GUI extends JFrame {
 
         initializeBoard();
         initializeMenuBar();
+        
+        if (aiSign == "X") {
+        	playMove(ai.getBestMove());
+        }
     }
 
     private void initializeMenuBar() {
@@ -74,6 +81,7 @@ public class GUI extends JFrame {
                 JButton btn = new JButton();
                 btn.setFont(new Font("Arial", Font.BOLD, 100));
                 board[i][j] = btn;
+                int index = 3 * i + j;
                 btn.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -81,13 +89,23 @@ public class GUI extends JFrame {
                                 (!hasWinner)) {
                             btn.setText(currentPlayer);
                             checkWinner();
+                            ai.setBoardValue(index, ((JButton)e.getSource()).getText());
                             switchPlayer();
+                            if (currentPlayer == aiSign) {
+                            	playMove(ai.getBestMove());
+                            }
                         }
                     }
                 });
                 pane.add(btn);
             }
         }
+    }
+    
+    private void playMove(int index) {
+    	int x = index / 3;
+    	int y = index % 3;
+    	board[x][y].doClick();
     }
 
     private void switchPlayer() {
